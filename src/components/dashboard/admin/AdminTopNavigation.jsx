@@ -35,6 +35,34 @@ const TopNavigation = () => {
             </NavLink>
 
             <NavLink
+              to="employees"
+              className={({ isActive }) =>
+                `flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-600 hover:text-gray-900"
+                }`
+              }
+            >
+              <FaUserCircle className="mr-2" />
+              Employees
+            </NavLink>
+
+            <NavLink
+              to="asset-history"
+              className={({ isActive }) =>
+                `flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  isActive
+                    ? "text-blue-600 bg-blue-50"
+                    : "text-gray-600 hover:text-gray-900"
+                }`
+              }
+            >
+              <FaUserCircle className="mr-2" />
+              Asset History
+            </NavLink>
+
+            <NavLink
               to="profile"
               className={({ isActive }) =>
                 `flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${

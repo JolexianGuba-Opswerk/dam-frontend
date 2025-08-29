@@ -1,13 +1,13 @@
-import CustomLoading from './CustomLoading';
-import QueryError from './CustomError';
+import CustomLoading from "./CustomLoading";
+import QueryError from "./CustomError";
 
-const QueryStatus = ({ 
-  query, 
-  loadingText = 'Loading...',
+const QueryStatus = ({
+  query,
+  loadingText = "Loading...",
   data,
-  emptyMessage = 'No data available.',
-  errorTitle = 'Something went wrong',
-  children 
+  emptyMessage = "No data available.",
+  errorTitle = "Something went wrong",
+  children,
 }) => {
   if (query.isLoading) {
     return <CustomLoading text={loadingText} />;
@@ -15,18 +15,16 @@ const QueryStatus = ({
 
   if (query.isError) {
     return (
-      <QueryError 
-        error={query.error} 
+      <QueryError
+        error={query.error}
         onRetry={query.refetch}
         title={errorTitle}
       />
     );
   }
-   if (!data || (Array.isArray(data) && data.length === 0)) {
+  if (!data || (Array.isArray(data) && data.length === 0)) {
     return (
-      <div className="text-center py-12 text-gray-500">
-        {emptyMessage}
-      </div>
+      <div className="text-center py-12 text-gray-500">{emptyMessage}</div>
     );
   }
 
