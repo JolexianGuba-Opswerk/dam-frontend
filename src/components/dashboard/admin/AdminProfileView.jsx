@@ -1,16 +1,18 @@
 import { useCurrentUser } from "../../../hooks/employee-side/useCurrentUser";
-import { useUpdateCredentials } from "../../../hooks/employee-side/useUpdateCredentials";
+
 import QueryStatus from "../../utils/QueryStatus";
 import { useState, useEffect } from "react";
-import { FaUser, FaBuilding, FaEnvelope } from "react-icons/fa";
+import { FaUser, FaBuilding, FaEnvelope, FaIdBadge } from "react-icons/fa";
 import ErrorMessage from "../../utils/ErrorMessage";
-import AdminOnlyNotice from "../../utils/AdminOnlyNotice";
+import { useDepartmentDrop } from "../../../hooks/admin/employee/useDepartmentDrop";
+import { useUpdateEmployeeDetails } from "../../../hooks/admin/employee/useUpdateEmployeeDetails";
 
-const ProfileView = () => {
+const AdminProfileView = () => {
   const { data: user, isLoading, isError, error, refetch } = useCurrentUser();
-  const [isEditing, setIsEditing] = useState(false);
-  const mutation = useUpdateCredentials();
+  const { data: departmentOptions } = useDepartmentDrop();
+  const mutation = useUpdateEmployeeDetails();
 
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -50,8 +52,12 @@ const ProfileView = () => {
         first_name: formData.firstName,
         last_name: formData.lastName,
         username: formData.username,
+        email: formData.email,
+        position: formData.position,
+        department: formData.department,
       },
     });
+
     setIsEditing(false);
   };
 
@@ -59,15 +65,28 @@ const ProfileView = () => {
     <div className="p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Your Profile</h1>
-        <p className="text-gray-600">Manage your account information</p>
+        <p className="text-gray-600">Manage your admin account information</p>
       </div>
 
+      {/* Error Handler Section */}
       {mutation.isError && (
         <div className="space-y-2 mb-4">
-          {Object.entries(mutation.error?.response?.data || {}).map(
-            ([field, messages]) => (
-              <ErrorMessage key={field} message={`${field}: ${messages[0]}`} />
+          {mutation.error.response?.status === 403 ? (
+            <ErrorMessage message="You do not have permission to update this asset." />
+          ) : mutation.error.response?.status === 400 ? (
+            // Bad request / validation errors
+            Object.entries(mutation.error.response.data).map(
+              ([field, messages]) => (
+                <ErrorMessage
+                  key={field}
+                  message={`${field}: ${messages[0]}`}
+                />
+              )
             )
+          ) : (
+            <ErrorMessage
+              message={mutation.error?.message || "Something went wrong"}
+            />
           )}
         </div>
       )}
@@ -78,7 +97,7 @@ const ProfileView = () => {
         errorTitle="Failed to load credentials"
       >
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          {/* Header with avatar */}
+          {/* Header */}
           <div className="p-6 flex items-center space-x-5">
             <div className="flex-shrink-0">
               {user?.employee_profile?.avatar_url ? (
@@ -97,8 +116,7 @@ const ProfileView = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-800">
-                {formData.firstName || "Not specified"}{" "}
-                {formData.lastName || ""}
+                {formData.firstName || "Not specified"} {formData.lastName}
               </h1>
               <p className="text-sm text-gray-500">
                 {formData.position || "Not specified"}
@@ -106,100 +124,84 @@ const ProfileView = () => {
             </div>
           </div>
 
-          {/* Details */}
+          {/* Form */}
           <form onSubmit={handleSubmit}>
             <div className="border-t border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 p-6">
               {/* First Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-600 flex items-center gap-2">
-                  <FaUser className="text-gray-500" /> First Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="firstName"
-                    required={true}
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                  />
-                ) : (
-                  <p className="mt-1 text-gray-900">
-                    {formData.firstName || "Not specified"}
-                  </p>
-                )}
-              </div>
+              <Field
+                icon={<FaUser className="text-gray-500" />}
+                label="First Name"
+                name="firstName"
+                value={formData.firstName}
+                isEditing={isEditing}
+                onChange={handleInputChange}
+              />
 
               {/* Last Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-600 flex items-center gap-2">
-                  <FaUser className="text-gray-500" /> Last Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="lastName"
-                    required={true}
-                    value={formData.lastName}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                  />
-                ) : (
-                  <p className="mt-1 text-gray-900">
-                    {formData.lastName || "Not specified"}
-                  </p>
-                )}
-              </div>
+              <Field
+                icon={<FaUser className="text-gray-500" />}
+                label="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                isEditing={isEditing}
+                onChange={handleInputChange}
+              />
 
               {/* Username */}
-              <div>
-                <label className="block text-sm font-medium text-gray-600 flex items-center gap-2">
-                  <FaUser className="text-gray-500" /> Username
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="username"
-                    required={true}
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
-                  />
-                ) : (
-                  <p className="mt-1 text-gray-900">
-                    {formData.username || "Not specified"}
-                  </p>
-                )}
-              </div>
+              <Field
+                icon={<FaIdBadge className="text-gray-500" />}
+                label="Username"
+                name="username"
+                value={formData.username}
+                isEditing={isEditing}
+                onChange={handleInputChange}
+              />
 
               {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-600 flex items-center gap-2">
-                  <FaEnvelope className="text-gray-500" /> Email
-                </label>
-                <p className="mt-1 text-gray-900">
-                  {formData.email || "Not specified"}
-                </p>
-              </div>
+              <Field
+                icon={<FaEnvelope className="text-gray-500" />}
+                label="Email"
+                name="email"
+                type="email"
+                value={formData.email}
+                isEditing={isEditing}
+                onChange={handleInputChange}
+              />
 
               {/* Position */}
-              <div>
-                <label className="block text-sm font-medium text-gray-600 flex items-center gap-2">
-                  <FaBuilding className="text-gray-500" /> Position
-                </label>
-                <p className="mt-1 text-gray-900">
-                  {formData.position || "Not specified"}
-                </p>
-              </div>
+              <Field
+                icon={<FaUser className="text-gray-500" />}
+                label="Position"
+                name="position"
+                value={formData.position}
+                isEditing={isEditing}
+                onChange={handleInputChange}
+              />
 
-              {/* Department */}
+              {/* Department (dropdown) */}
               <div>
                 <label className="block text-sm font-medium text-gray-600 flex items-center gap-2">
                   <FaBuilding className="text-gray-500" /> Department
                 </label>
-                <p className="mt-1 text-gray-900">
-                  {formData.department || "Not specified"}
-                </p>
+                {isEditing ? (
+                  <select
+                    name="department"
+                    value={formData.department}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+                  >
+                    <option value="">Select Department</option>
+                    {departmentOptions?.map((dept) => (
+                      <option key={dept.id} value={dept.id}>
+                        {dept.full_name}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="mt-1 text-gray-900">
+                    {formData.department || "Not specified"}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -255,9 +257,36 @@ const ProfileView = () => {
           </form>
         </div>
       </QueryStatus>
-      <AdminOnlyNotice />
     </div>
   );
 };
 
-export default ProfileView;
+const Field = ({
+  icon,
+  label,
+  name,
+  value,
+  isEditing,
+  onChange,
+  type = "text",
+}) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-600 flex items-center gap-2">
+      {icon} {label}
+    </label>
+    {isEditing ? (
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        required
+        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
+      />
+    ) : (
+      <p className="mt-1 text-gray-900">{value || "Not specified"}</p>
+    )}
+  </div>
+);
+
+export default AdminProfileView;

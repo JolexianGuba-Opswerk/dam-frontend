@@ -1,17 +1,17 @@
 import { Navigate } from "react-router-dom";
-import { useCurrentUser } from "../../hooks/useCurrentUser";
+import { useCurrentUser } from "../../hooks/employee-side/useCurrentUser";
 import CustomLoading from "../utils/CustomLoading";
 
 const PublicRoute = ({ children }) => {
   const { data: user, isLoading } = useCurrentUser();
 
-  
- if (isLoading) {
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <CustomLoading text="Loading..." />
-    </div>
-    )}
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <CustomLoading text="Loading..." />
+      </div>
+    );
+  }
 
   // If the user is authenticated, redirect them to the dashboard.
   if (user) {

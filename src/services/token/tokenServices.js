@@ -1,4 +1,4 @@
-import publicApi from "../employee/api/publicApi";
+import publicApi from "../api/publicApi";
 
 export async function getRefreshToken() {
   const { data } = await publicApi.patch("token/refresh/");
