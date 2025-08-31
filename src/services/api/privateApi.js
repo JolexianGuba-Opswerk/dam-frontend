@@ -1,6 +1,5 @@
 import axios from "axios";
 import { publicApi } from "./publicApi";
-// import { getRefreshToken } from '../../token/tokenServices';
 
 const privateApi = axios.create({
   baseURL: "http://127.0.0.1:8000/api",
@@ -12,23 +11,25 @@ privateApi.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // If error is 401 and we haven't already tried to refresh
+    if (!error.response) {
+      return Promise.reject(error);
+    }
+
+    // If error is 401 and havent requested again
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // Try to refresh the token
-        await publicApi.post(
-          "/token/refresh/",
-          {},
-          {
-            withCredentials: true,
-          }
-        );
+        // Attempt to refresh the token (cookies handle auth)
+        await publicApi.post("/token/refresh/", {}, { withCredentials: true });
 
-        return privateApi(originalRequest);
+        // Retry the original request
+        return privateApi({
+          ...originalRequest,
+          withCredentials: true,
+        });
       } catch (refreshError) {
-        // Refresh failed, redirect to login
+        // force logout
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }

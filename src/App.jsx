@@ -5,8 +5,8 @@ import VerificationPending from "./pages/employee/VerificationPending";
 import DashboardView from "./pages/employee/DashboardView";
 import AssetsView from "./components/dashboard/employee/AssetView";
 import ProfileView from "./components/dashboard/employee/ProfileView";
-import ProtectedRoute from "./components/auth/ProtectedRoute";
-import PublicRoute from "./components/auth/PublicRoute";
+
+import ProtectedRoute from "./components/auth/ProtectedRoutes";
 import AssetManagement from "./components/dashboard/admin/AssetManagement";
 import AssetEdit from "./components/modal/admin/assets/EditAssetModal";
 import AdminDashboard from "./pages/AdminDashboardView";
@@ -15,30 +15,23 @@ import EmployeeManager from "./components/dashboard/admin/EmployeeManagement";
 import AssetHistory from "./components/dashboard/admin/AssetHistory";
 import EmployeeManagement from "./components/dashboard/admin/EmployeeManagement";
 import AdminProfileView from "./components/dashboard/admin/AdminProfileView";
+import UnauthorizedPage from "./components/auth/UnAuthorizedPage";
 
 function App() {
   return (
     <>
       <Routes>
         // Public login route
-        <Route
-          path="/login"
-          element={
-            // <PublicRoute>
-
-            // </PublicRoute>
-            <LoginForm />
-          }
-        />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/unathorized" element={<UnauthorizedPage />} />
         // Admin Route
         <Route path="/pending/" element={<VerificationPending />} />
         <Route
           path="/admin"
           element={
-            // <ProtectedRoute>
-            //   <AdminDashboard />
-            // </ProtectedRoute>
-            <AdminDashboard />
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
           }
         >
           <Route index element={<Navigate to="assets" replace />} />
@@ -60,10 +53,9 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <DashboardView />
-            // <ProtectedRoute>
-
-            // </ProtectedRoute>
+            <ProtectedRoute allowedRoles={["employee"]}>
+              <DashboardView />
+            </ProtectedRoute>
           }
         >
           <Route index element={<Navigate to="assets" replace />} />

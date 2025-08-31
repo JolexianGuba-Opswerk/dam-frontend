@@ -1,7 +1,6 @@
 import { FaSignOutAlt } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
 import ModalPortal from "./ModalPortal";
-// import { logout } from "../../services/employee/authServices";
 import { useQueryClient } from "@tanstack/react-query";
 
 export default function LogoutModal({ isOpen, onClose }) {
@@ -9,16 +8,18 @@ export default function LogoutModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   const onConfirm = async () => {
-    queryClient.removeQueries(["currentUser"]);
+    queryClient.clear();
+    queryClient.removeQueries();
+    sessionStorage.clear();
     window.location.href = "http://127.0.0.1:8000/api/logout/";
   };
 
   return (
     <ModalPortal>
-      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-sm">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/15 backdrop-blur-sm">
         <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
           {/* Header */}
-          <div className="flex justify-between items-center border-b px-6 py-4">
+          <div className="flex justify-between items-center px-6 py-4">
             <h2 className="text-lg font-semibold text-gray-800">
               Confirm Logout
             </h2>
@@ -40,7 +41,7 @@ export default function LogoutModal({ isOpen, onClose }) {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-end gap-3 border-t px-6 py-4">
+          <div className="flex justify-end gap-3 px-6 py-4">
             <button
               onClick={onClose}
               className="px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700"

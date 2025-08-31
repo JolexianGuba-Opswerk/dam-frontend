@@ -20,8 +20,9 @@ const AdminProfileView = () => {
     email: "",
     position: "",
     department: "",
+    department_name: "",
   });
-
+  console.log(user);
   useEffect(() => {
     if (user) {
       setFormData({
@@ -30,7 +31,8 @@ const AdminProfileView = () => {
         username: user?.username || "",
         email: user?.email || "",
         position: user?.employee_profile?.position || "",
-        department: user?.employee_profile?.department || "",
+        department: user?.employee_profile?.department_id || "",
+        department_name: user?.employee_profile.department || "",
       });
     }
   }, [user]);
@@ -46,23 +48,29 @@ const AdminProfileView = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    mutation.mutate({
-      id: user.id,
-      credentials: {
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        username: formData.username,
-        email: formData.email,
-        position: formData.position,
-        department: formData.department,
+    mutation.mutate(
+      {
+        id: user.id,
+        credentials: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          username: formData.username,
+          email: formData.email,
+          position: formData.position,
+          department: formData.department,
+        },
       },
-    });
-
-    setIsEditing(false);
+      {
+        onSuccess: async () => {
+          refetch();
+          setIsEditing(false);
+        },
+      }
+    );
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-800">Your Profile</h1>
         <p className="text-gray-600">Manage your admin account information</p>
@@ -199,7 +207,7 @@ const AdminProfileView = () => {
                   </select>
                 ) : (
                   <p className="mt-1 text-gray-900">
-                    {formData.department || "Not specified"}
+                    {formData.department_name || "Not specified"}
                   </p>
                 )}
               </div>

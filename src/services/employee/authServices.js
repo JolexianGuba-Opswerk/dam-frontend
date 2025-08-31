@@ -1,8 +1,8 @@
-import { publicApi } from './api/publicApi';
+import { publicApi } from "../api/publicApi";
 
-
-export async function loginUser(id, credentials) {
-  const { data } = await publicApi.post(`employees-side/${id}/`, credentials);
+export async function loginUser(credentials) {
+  const { data } = await publicApi.post("token/", credentials);
+  console.log(data);
   return data;
 }
 
@@ -16,21 +16,17 @@ export async function verifyOtp(body) {
   return data;
 }
 
-
 export async function resetPassword(newPassword) {
   const { data } = await publicApi.post(`reset-password/`, newPassword);
   return data;
 }
 
-
 export async function loginWithGoogle() {
   const res = await publicApi.get("oidc/authenticate/");
   return res.data.access_token;
-};
+}
 
 export async function logout() {
   const res = await publicApi.get("logout/");
-  return res
-};
-
-
+  return res;
+}

@@ -5,10 +5,6 @@ import {
   FaFilter,
   FaChevronLeft,
   FaChevronRight,
-  FaWifi,
-  FaTools,
-  FaBoxOpen,
-  FaExclamationCircle,
   FaPlus,
   FaUser,
 } from "react-icons/fa";
@@ -96,7 +92,6 @@ const EmployeeManagement = () => {
               <FaPlus className="mr-2" /> Create
             </button>
           </div>
-
           {/* Filters */}
           {showFilters && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
@@ -174,7 +169,6 @@ const EmployeeManagement = () => {
               </div>
             </div>
           )}
-
           {/* Assets Table */}
           <QueryStatus
             query={{ isLoading, isError, error }}
@@ -263,17 +257,21 @@ const EmployeeManagement = () => {
           </QueryStatus>
 
           {/* Modals */}
-          <CreateEmployeeModal
-            isOpen={isCreateOpen}
-            onClose={() => navigate("/admin/employees")}
-          />
+          {isCreateOpen && (
+            <CreateEmployeeModal
+              isOpen={isCreateOpen}
+              onClose={() => navigate("/admin/employees")}
+            />
+          )}
 
-          <EditEmployeeModal
-            isOpen={isEditOpen}
-            onClose={() => {
-              navigate("/admin/employees");
-            }}
-          />
+          {isEditOpen && (
+            <EditEmployeeModal
+              isOpen={isEditOpen}
+              onClose={() => {
+                navigate("/admin/employees");
+              }}
+            />
+          )}
         </div>
 
         {/* Pagination */}

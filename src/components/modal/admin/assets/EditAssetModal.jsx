@@ -6,7 +6,7 @@ import {
   FiCalendar,
   FiFileText,
   FiTag,
-  FiHash,
+  FiLoader,
   FiEdit3,
   FiTrash2,
   FiBox,
@@ -21,6 +21,8 @@ import ErrorMessage from "../../../utils/ErrorMessage";
 import { useDeleteAsset } from "../../../../hooks/admin/assets/useDeleteAsset";
 import { DeleteConfirmationModal } from "../../../utils/DeleteConfirmationModal";
 import { useParams } from "react-router-dom";
+import { Mutation } from "@tanstack/react-query";
+
 const EditAssetModal = ({ isOpen, onClose }) => {
   const { id: assetId } = useParams();
   const [formData, setFormData] = useState({
@@ -46,8 +48,25 @@ const EditAssetModal = ({ isOpen, onClose }) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  // Clearing out prev mutations
+  const handleClose = () => {
+    mutation.reset();
+    setFormData({
+      name: "",
+      serial_number: "",
+      category: "",
+      assigned_to: "",
+      purchase_date: "",
+      status: "",
+      description: "",
+      notes: "",
+    });
+    onClose(true);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("Loading...", mutation);
     mutation.mutate(
       {
         id: assetId,
@@ -62,9 +81,10 @@ const EditAssetModal = ({ isOpen, onClose }) => {
           notes: formData.notes,
         },
       },
+
       {
         onSuccess: () => {
-          onClose(true);
+          handleClose();
         },
       }
     );
@@ -84,22 +104,6 @@ const EditAssetModal = ({ isOpen, onClose }) => {
       });
     }
   }, [data, assetId, isOpen]);
-
-  // Clearing out prev mutations
-  const handleClose = () => {
-    mutation.reset();
-    setFormData({
-      name: "",
-      serial_number: "",
-      category: "",
-      assigned_to: "",
-      purchase_date: "",
-      status: "",
-      description: "",
-      notes: "",
-    });
-    onClose(true);
-  };
 
   // Delete Section Logic
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -329,14 +333,25 @@ const EditAssetModal = ({ isOpen, onClose }) => {
                 Cancel
               </button>
 
-              <button
-                type="submit"
-                disabled={mutation.isLoading}
-                className="px-5 py-2.5 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center"
-              >
-                <FiSave className="mr-2" />
-                Save
-              </button>
+              {(mutation.isPending && (
+                <button
+                  type="submit"
+                  disabled={true}
+                  className="px-5 py-2.5 bg-blue-500 text-white rounded-lg  flex items-center"
+                >
+                  <FiLoader className="mr-2" />
+                  Loading
+                </button>
+              )) || (
+                <button
+                  type="submit"
+                  disabled={mutation.isLoading}
+                  className="px-5 py-2.5 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center"
+                >
+                  <FiSave className="mr-2" />
+                  Save
+                </button>
+              )}
             </div>
           </form>
         </QueryStatus>

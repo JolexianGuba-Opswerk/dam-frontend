@@ -5,20 +5,16 @@ import { toast } from "react-toastify";
 
 export const useUpdateAsset = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: updateAssetDetails,
-    onSuccess: () => {
-      toast.success("Asset updated successfully!");
-
-      queryClient.invalidateQueries({ queryKey: ["assetDetails"] });
-
-      queryClient.invalidateQueries({
-        queryKey: ["adminEmployeeAssets"],
-        exact: false,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["assetDetails"],
       });
-
-      queryClient.invalidateQueries();
+      await queryClient.invalidateQueries({
+        queryKey: ["adminEmployeeAssets"],
+      });
+      toast.success("Asset updated successfully!");
     },
     onError: (e) => {
       console.log(e);

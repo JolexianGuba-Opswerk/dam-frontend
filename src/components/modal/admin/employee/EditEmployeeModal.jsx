@@ -9,6 +9,7 @@ import {
   FiCheckCircle,
   FiSave,
   FiUnlock,
+  FiLoader,
 } from "react-icons/fi";
 import { FaUserPlus } from "react-icons/fa";
 import { useDepartmentDrop } from "../../../../hooks/admin/employee/useDepartmentDrop";
@@ -19,6 +20,7 @@ import { toast } from "react-toastify";
 import { useDeleteEmployee } from "../../../../hooks/admin/employee/useDeleteEmployee";
 import { DeleteConfirmationModal } from "../../../utils/DeleteConfirmationModal";
 import { useParams } from "react-router-dom";
+import QueryStatus from "../../../utils/QueryStatus";
 
 const EditEmployeeModal = ({ isOpen, onClose }) => {
   const { id: employeeId } = useParams();
@@ -31,13 +33,17 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
     department: "",
     position: "",
     is_verified: false,
+    avatar_url: "",
   });
 
   const { data: department } = useDepartmentDrop();
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-  const { data } = useGetEmployeeDetails(employeeId, isOpen);
+  const { data, isLoading, isError, error, refetch } = useGetEmployeeDetails(
+    employeeId,
+    isOpen
+  );
   const mutation = useUpdateEmployeeDetails();
 
   const handleSubmit = (e) => {
@@ -153,199 +159,223 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
         )}
 
         {/* Modal Body */}
-        <form onSubmit={handleSubmit} className="p-6">
-          {/* Avatar and Date Joined Section */}
-          <div className="flex items-center mb-6">
-            <div className="mr-4">
-              <img
-                src={
-                  formData.avatar_url ||
-                  `https://ui-avatars.com/api/?name=${formData?.first_name}&background=random&size=64`
-                }
-                alt="Profile"
-                className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
-                onError={(e) => {
-                  e.target.src = `https://ui-avatars.com/api/?name=${formData?.first_name}&background=random&size=64`;
-                }}
-              />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-gray-700">Date Joined</div>
-              <div className="text-sm text-gray-500">
-                {formData.date_joined
-                  ? new Date(formData.date_joined).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })
-                  : "Not specified"}
+        <QueryStatus
+          query={{ isLoading, isError, error, refetch }}
+          loadingText="Loading your credentials..."
+          data={data}
+          errorTitle="Failed to load credentials"
+        >
+          <form onSubmit={handleSubmit} className="p-6">
+            {/* Avatar and Date Joined Section */}
+            <div className="flex items-center mb-6">
+              <div className="mr-4">
+                <img
+                  src={
+                    formData.avatar_url ||
+                    `https://ui-avatars.com/api/?name=${formData?.first_name}&background=random&size=64`
+                  }
+                  alt="Profile"
+                  className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                  onError={(e) => {
+                    e.target.src = `https://ui-avatars.com/api/?name=${formData?.first_name}&background=random&size=64`;
+                  }}
+                />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-gray-700">
+                  Date Joined
+                </div>
+                <div className="text-sm text-gray-500">
+                  {formData.date_joined
+                    ? new Date(formData.date_joined).toLocaleDateString(
+                        "en-US",
+                        {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        }
+                      )
+                    : "Not specified"}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            {/* First Name Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <FiUser className="mr-2 text-gray-500" />
-                First Name
-              </label>
-              <input
-                type="text"
-                name="first_name"
-                required={true}
-                value={formData.first_name}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter first name"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              {/* First Name Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FiUser className="mr-2 text-gray-500" />
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  name="first_name"
+                  required={true}
+                  value={formData.first_name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter first name"
+                />
+              </div>
+
+              {/* Last Name Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FiUser className="mr-2 text-gray-500" />
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  name="last_name"
+                  value={formData.last_name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter last name"
+                />
+              </div>
+
+              {/* Username Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FiUser className="mr-2 text-gray-500" />
+                  Username
+                </label>
+                <input
+                  type="text"
+                  name="username"
+                  required={true}
+                  value={formData.username}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter username"
+                />
+              </div>
+
+              {/* Email Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FiMail className="mr-2 text-gray-500" />
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  required={true}
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter email address"
+                />
+              </div>
+
+              {/* Department Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FiBriefcase className="mr-2 text-gray-500" />
+                  Department
+                </label>
+                <select
+                  name="department"
+                  required={true}
+                  value={formData.department}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="">-- Select Department --</option>
+                  {department?.map((dept) => (
+                    <option key={dept.id} value={dept.id}>
+                      {dept.full_name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Position Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FiAward className="mr-2 text-gray-500" />
+                  Position
+                </label>
+                <input
+                  type="text"
+                  name="position"
+                  value={formData.position}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="Enter position title"
+                />
+              </div>
+
+              {/* Verification Field */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                  <FiCheckCircle className="mr-2 text-gray-500" />
+                  Verification Status
+                </label>
+                <select
+                  name="is_verified"
+                  required={true}
+                  value={formData.is_verified}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="false">Not Verified</option>
+                  <option value="true">Verified</option>
+                </select>
+              </div>
             </div>
 
-            {/* Last Name Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <FiUser className="mr-2 text-gray-500" />
-                Last Name
-              </label>
-              <input
-                type="text"
-                name="last_name"
-                value={formData.last_name}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter last name"
-              />
-            </div>
-
-            {/* Username Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <FiUser className="mr-2 text-gray-500" />
-                Username
-              </label>
-              <input
-                type="text"
-                name="username"
-                required={true}
-                value={formData.username}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter username"
-              />
-            </div>
-
-            {/* Email Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <FiMail className="mr-2 text-gray-500" />
-                Email Address
-              </label>
-              <input
-                type="email"
-                name="email"
-                required={true}
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter email address"
-              />
-            </div>
-
-            {/* Department Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <FiBriefcase className="mr-2 text-gray-500" />
-                Department
-              </label>
-              <select
-                name="department"
-                required={true}
-                value={formData.department}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            {/* Action Buttons */}
+            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+              <button
+                type="button"
+                onClick={() => {
+                  toast.info("Password change feature will be available soon");
+                }}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center"
               >
-                <option value="">-- Select Department --</option>
-                {department?.map((dept) => (
-                  <option key={dept.id} value={dept.id}>
-                    {dept.full_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Position Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <FiAward className="mr-2 text-gray-500" />
-                Position
-              </label>
-              <input
-                type="text"
-                name="position"
-                value={formData.position}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter position title"
-              />
-            </div>
-
-            {/* Verification Field */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
-                <FiCheckCircle className="mr-2 text-gray-500" />
-                Verification Status
-              </label>
-              <select
-                name="is_verified"
-                required={true}
-                value={formData.is_verified}
-                onChange={handleChange}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                <FiUnlock className="mr-2" />
+                Change Password
+              </button>
+              <button
+                type="button"
+                onClick={setOpenDeleteModal}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center"
               >
-                <option value="false">Not Verified</option>
-                <option value="true">Verified</option>
-              </select>
+                <FiTrash2 className="mr-2" />
+                Delete
+              </button>
+
+              <button
+                type="button"
+                onClick={handleClose}
+                className="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
+              >
+                <FiX className="mr-2" />
+                Cancel
+              </button>
+              {(mutation.isPending && (
+                <button
+                  type="submit"
+                  disabled={true}
+                  className="px-5 py-2.5 bg-blue-500 text-white rounded-lg  flex items-center"
+                >
+                  <FiLoader className="mr-2" />
+                  Loading
+                </button>
+              )) || (
+                <button
+                  type="submit"
+                  disabled={mutation.isLoading}
+                  className="px-5 py-2.5 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center"
+                >
+                  <FiSave className="mr-2" />
+                  Save
+                </button>
+              )}
             </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-            <button
-              type="button"
-              onClick={() => {
-                toast.info("Password change feature will be available soon");
-              }}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center"
-            >
-              <FiUnlock className="mr-2" />
-              Change Password
-            </button>
-            <button
-              type="button"
-              onClick={setOpenDeleteModal}
-              className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center"
-            >
-              <FiTrash2 className="mr-2" />
-              Delete
-            </button>
-
-            <button
-              type="button"
-              onClick={handleClose}
-              className="px-5 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors flex items-center"
-            >
-              <FiX className="mr-2" />
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-5 py-2.5 bg-green-700 text-white rounded-lg hover:bg-green-600 transition-colors flex items-center"
-            >
-              <FiSave className="mr-2" />
-              Save
-            </button>
-          </div>
-        </form>
+          </form>
+        </QueryStatus>
       </div>
       <DeleteConfirmationModal
         isOpen={openDeleteModal}

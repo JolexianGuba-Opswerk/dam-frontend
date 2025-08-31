@@ -10,7 +10,7 @@ export const useCreateAsset = () => {
     mutationFn: createAsset,
     onSuccess: () => {
       toast.success("Asset created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["adminEmployeeAssets"] });
+      queryClient.invalidateQueries(["adminEmployeeAssets"]);
     },
     onError: (e) => {
       console.log(e);
