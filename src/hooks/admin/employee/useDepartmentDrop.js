@@ -5,6 +5,7 @@ export const useDepartmentDrop = () => {
   return useQuery({
     queryKey: ["departmentDrop"],
     queryFn: getDepartmentDropdown,
-    staleTime: 60 * 1000,
+    staleTime: Infinity,
+    refetchOnMount: false,
   });
 };

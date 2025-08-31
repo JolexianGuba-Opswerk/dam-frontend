@@ -29,6 +29,7 @@ const AssetManagement = () => {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
   const { data, isLoading, isError, error } = useGetAllAssets({
     page,
     category,
@@ -112,7 +113,6 @@ const AssetManagement = () => {
               <FaPlus className="mr-2" /> Create
             </button>
           </div>
-
           {/* Filters */}
           {showFilters && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
@@ -159,7 +159,6 @@ const AssetManagement = () => {
               </div>
             </div>
           )}
-
           {/* Assets Table */}
           <QueryStatus
             query={{ isLoading, isError, error }}
@@ -233,16 +232,21 @@ const AssetManagement = () => {
           </QueryStatus>
 
           {/* Modals */}
-          <CreateAssetModal
-            isOpen={isCreateOpen}
-            onClose={() => navigate("/admin/assets")}
-          />
-          <EditAssetModal
-            isOpen={isEditOpen}
-            onClose={() => {
-              navigate("/admin/assets");
-            }}
-          />
+
+          {isCreateOpen && (
+            <CreateAssetModal
+              isOpen={isCreateOpen}
+              onClose={() => navigate("/admin/assets")}
+            />
+          )}
+          {isEditOpen && (
+            <EditAssetModal
+              isOpen={isEditOpen}
+              onClose={() => {
+                navigate("/admin/assets");
+              }}
+            />
+          )}
         </div>
 
         {/* Pagination */}

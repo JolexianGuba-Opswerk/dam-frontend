@@ -5,7 +5,6 @@ export const useCurrentUser = () => {
   return useQuery({
     queryKey: ["currentUser"],
     queryFn: () => currentUser(),
-    staleTime: 5 * 60 * 1000,
     retry: false,
   });
 };

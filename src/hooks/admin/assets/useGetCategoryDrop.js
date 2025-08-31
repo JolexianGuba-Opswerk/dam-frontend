@@ -5,6 +5,7 @@ export const useGetCategoryDrop = () => {
   return useQuery({
     queryKey: ["categoryDropdown"],
     queryFn: getCategoryDropdown,
-    staleTime: 60 * 1000,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
   });
 };

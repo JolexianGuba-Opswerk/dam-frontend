@@ -5,6 +5,7 @@ export const useGetEmployeeDrop = () => {
   return useQuery({
     queryKey: ["employeeDropdown"],
     queryFn: getEmployeeDropdown,
-    staleTime: 60 * 1000,
+    staleTime: Infinity,
+    refetchOnMount: false,
   });
 };

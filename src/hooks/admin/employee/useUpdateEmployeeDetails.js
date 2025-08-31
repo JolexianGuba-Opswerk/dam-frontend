@@ -8,10 +8,11 @@ export const useUpdateEmployeeDetails = () => {
 
   return useMutation({
     mutationFn: updateEmployeeDetails,
-    onSuccess: () => {
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["employeeDetails"] });
+      await queryClient.invalidateQueries({ queryKey: ["adminEmployees"] });
+      await queryClient.invalidateQueries({ queryKey: ["currentUser"] });
       toast.success("Employee details updated successfully!");
-      queryClient.invalidateQueries({ queryKey: ["employeeDetails"] });
-      queryClient.invalidateQueries({ queryKey: ["adminEmployees"] });
     },
     onError: (e) => {
       console.log(e);
