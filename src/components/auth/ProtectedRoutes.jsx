@@ -4,7 +4,7 @@ import CustomLoading from "../utils/CustomLoading";
 
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { data: user, isLoading } = useCurrentUser();
-  // Still fetching user data
+
   if (isLoading) {
     return <CustomLoading />;
   }

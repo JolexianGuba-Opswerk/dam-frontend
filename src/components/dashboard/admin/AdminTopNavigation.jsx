@@ -1,5 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { FaUserCircle, FaSignOutAlt, FaCubes } from "react-icons/fa";
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+  FaCubes,
+  FaHistory,
+  FaList,
+  FaUsers,
+} from "react-icons/fa";
 import { useState } from "react";
 import LogoutModal from "../../modal/ConfirmLogout.jsx";
 
@@ -44,7 +51,7 @@ const TopNavigation = () => {
                 }`
               }
             >
-              <FaUserCircle className="mr-2" />
+              <FaUsers className="mr-2" />
               Employees
             </NavLink>
 
@@ -58,7 +65,7 @@ const TopNavigation = () => {
                 }`
               }
             >
-              <FaUserCircle className="mr-2" />
+              <FaHistory className="mr-2" />
               Asset History
             </NavLink>
 

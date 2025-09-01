@@ -153,7 +153,7 @@ const AssetManagement = () => {
                   <option value="">All Statuses</option>
                   <option value="IN_USE">In Use</option>
                   <option value="REPAIR">Repair</option>
-                  <option value="IN_STOCK">In Stock</option>
+                  <option value="IN_STORAGE">In Storage</option>
                   <option value="RETIRED">Retired</option>
                 </select>
               </div>

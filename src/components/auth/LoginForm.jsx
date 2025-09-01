@@ -2,8 +2,10 @@ import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { useLogin } from "../../hooks/auth/useLogin";
 import ErrorMessage from "../utils/ErrorMessage";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -48,7 +50,7 @@ export default function LoginForm() {
             <div className="space-y-1 mb-4">
               <ErrorMessage
                 message={
-                  mutation.error?.response?.data?.detail ||
+                  mutation.error?.response?.data?.error ||
                   "Something went wrong"
                 }
               />
@@ -121,13 +123,13 @@ export default function LoginForm() {
               </div>
             </div>
 
-            <div className="flex justify-end items-center text-xs">
-              <a
-                href="#"
-                className="text-blue-500 hover:text-blue-700 transition"
-              >
+            <div
+              className="flex justify-end items-center text-xs cursor-pointer"
+              onClick={() => navigate("/forget-password/", { replace: true })}
+            >
+              <span className="text-blue-500 hover:text-blue-700 transition">
                 Forgot password?
-              </a>
+              </span>
             </div>
 
             <button

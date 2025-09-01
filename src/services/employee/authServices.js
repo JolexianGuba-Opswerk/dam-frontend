@@ -12,12 +12,24 @@ export async function forgetPassword(email) {
 }
 
 export async function verifyOtp(body) {
-  const { data } = await publicApi.post(`forget-password/`, body);
+  const { data } = await publicApi.post(`verify-otp/`, body);
+  console.log(data);
   return data;
 }
 
-export async function resetPassword(newPassword) {
-  const { data } = await publicApi.post(`reset-password/`, newPassword);
+export async function resetPassword(new_password, access_token) {
+  publicApi.interceptors.request.use(
+    async (config) => {
+      if (access_token) {
+        config.headers.Authorization = `Bearer ${access_token}`;
+      }
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
+    }
+  );
+  const { data } = await publicApi.post(`reset-password/`, { new_password });
   return data;
 }
 
