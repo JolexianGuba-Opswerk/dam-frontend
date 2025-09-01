@@ -1,11 +1,23 @@
 import { FcClock } from "react-icons/fc";
 import { useQueryClient } from "@tanstack/react-query";
+import { useCurrentUser } from "../../hooks/employee-side/useCurrentUser";
+import CustomLoading from "../../components/utils/CustomLoading";
+import { Navigate } from "react-router-dom";
+
 const VerificationPending = () => {
   const queryclient = useQueryClient();
   const onConfirm = async () => {
     queryclient.clear();
     window.location.href = "http://127.0.0.1:8000/api/logout/";
   };
+  const { data: user, isLoading } = useCurrentUser();
+
+  if (isLoading) {
+    return <CustomLoading />;
+  }
+  if (!user.is_superuser && user.employee_profile.is_verified) {
+    return <Navigate to="/dashboard" replace />;
+  }
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-md overflow-hidden">

@@ -16,6 +16,7 @@ import AssetHistory from "./components/dashboard/admin/AssetHistory";
 import EmployeeManagement from "./components/dashboard/admin/EmployeeManagement";
 import AdminProfileView from "./components/dashboard/admin/AdminProfileView";
 import UnauthorizedPage from "./components/auth/UnAuthorizedPage";
+import ForgotPasswordFlow from "./components/forgot-password-flow/ForgotPasswordFlow";
 
 function App() {
   return (
@@ -24,8 +25,9 @@ function App() {
         // Public login route
         <Route path="/login" element={<LoginForm />} />
         <Route path="/unathorized" element={<UnauthorizedPage />} />
+        <Route path="/forget-password" element={<ForgotPasswordFlow />} />
         // Admin Route
-        <Route path="/pending/" element={<VerificationPending />} />
+        <Route path="/pending" element={<VerificationPending />} />
         <Route
           path="/admin"
           element={
