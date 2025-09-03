@@ -14,6 +14,10 @@ export const useUpdateAsset = () => {
       await queryClient.invalidateQueries({
         queryKey: ["adminEmployeeAssets"],
       });
+      await queryClient.invalidateQueries({
+        queryKey: ["adminEmployeeAssetHistory"],
+      });
+
       toast.success("Asset updated successfully!");
     },
     onError: (e) => {

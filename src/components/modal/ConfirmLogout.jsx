@@ -9,6 +9,7 @@ export default function LogoutModal({ isOpen, onClose }) {
 
   const onConfirm = async () => {
     queryClient.clear();
+    queryClient.invalidateQueries();
     queryClient.removeQueries();
     sessionStorage.clear();
     window.location.href = "http://127.0.0.1:8000/api/logout/";

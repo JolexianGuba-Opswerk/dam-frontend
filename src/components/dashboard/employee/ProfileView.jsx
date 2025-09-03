@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { FaUser, FaBuilding, FaEnvelope } from "react-icons/fa";
 import ErrorMessage from "../../utils/ErrorMessage";
 import AdminOnlyNotice from "../../utils/AdminOnlyNotice";
+import ChangePasswordModal from "./ChangePasswordModal";
 
 const ProfileView = () => {
   const { data: user, isLoading, isError, error, refetch } = useCurrentUser();
@@ -54,6 +55,7 @@ const ProfileView = () => {
     });
     setIsEditing(false);
   };
+  const [openChangePassword, setOpenChangePassword] = useState(false);
 
   return (
     <div className="p-6">
@@ -242,9 +244,7 @@ const ProfileView = () => {
                   </button>
                   <button
                     type="button"
-                    onClick={() =>
-                      alert("Change Password functionality coming soon!")
-                    }
+                    onClick={setOpenChangePassword}
                     className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
                   >
                     Change Password
@@ -256,6 +256,10 @@ const ProfileView = () => {
         </div>
       </QueryStatus>
       <AdminOnlyNotice />
+      <ChangePasswordModal
+        onClose={setOpenChangePassword}
+        isOpen={openChangePassword}
+      />
     </div>
   );
 };

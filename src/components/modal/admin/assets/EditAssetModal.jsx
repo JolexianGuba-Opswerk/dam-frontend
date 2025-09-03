@@ -48,25 +48,9 @@ const EditAssetModal = ({ isOpen, onClose }) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  // Clearing out prev mutations
-  const handleClose = () => {
-    mutation.reset();
-    setFormData({
-      name: "",
-      serial_number: "",
-      category: "",
-      assigned_to: "",
-      purchase_date: "",
-      status: "",
-      description: "",
-      notes: "",
-    });
-    onClose(true);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Loading...", mutation);
+
     mutation.mutate(
       {
         id: assetId,
@@ -115,7 +99,6 @@ const EditAssetModal = ({ isOpen, onClose }) => {
 
   const handleOnDelete = () => {
     if (assetId) {
-      console.log("On delete");
       deleteMutation.mutate(assetId, {
         onSuccess: () => {
           setOpenDeleteModal(false);
@@ -125,6 +108,24 @@ const EditAssetModal = ({ isOpen, onClose }) => {
     }
   };
 
+  // Clearing out prev mutations
+  const handleClose = () => {
+    if (mutation.isPending || deleteMutation.isPending) {
+      return;
+    }
+    mutation.reset();
+    setFormData({
+      name: "",
+      serial_number: "",
+      category: "",
+      assigned_to: "",
+      purchase_date: "",
+      status: "",
+      description: "",
+      notes: "",
+    });
+    onClose(true);
+  };
   if (!isOpen) return null;
 
   return (
@@ -315,6 +316,7 @@ const EditAssetModal = ({ isOpen, onClose }) => {
             <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button
                 type="button"
+                disabled={mutation.isPending || deleteMutation.isPending}
                 onClick={() => {
                   openModal();
                 }}
@@ -339,7 +341,7 @@ const EditAssetModal = ({ isOpen, onClose }) => {
                   disabled={true}
                   className="px-5 py-2.5 bg-blue-500 text-white rounded-lg  flex items-center"
                 >
-                  <FiLoader className="mr-2" />
+                  <FiLoader className="mr-2 mx-auto animate-spin text-white-500" />
                   Loading
                 </button>
               )) || (

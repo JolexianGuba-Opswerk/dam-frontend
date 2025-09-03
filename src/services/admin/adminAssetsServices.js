@@ -11,6 +11,16 @@ export const getAssets = async ({ page, category, status, search }) => {
   return data;
 };
 
+export const getAssetHistory = async ({ page, search }) => {
+  const params = {};
+  if (page) params.page = page;
+
+  if (search && search !== "") params.search = search;
+
+  const { data } = await privateApi.get("/assets/history/", { params });
+  console.log(data);
+  return data;
+};
 export const getAssetDetails = async (id) => {
   const { data } = await privateApi.get(`/assets/${id}/`);
   return data;

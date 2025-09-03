@@ -17,6 +17,12 @@ export async function verifyOtp(body) {
   return data;
 }
 
+export async function changePassword(body) {
+  const { data } = await publicApi.post(`change-password/`, body);
+  console.log(data);
+  return data;
+}
+
 export async function resetPassword(new_password, access_token) {
   publicApi.interceptors.request.use(
     async (config) => {

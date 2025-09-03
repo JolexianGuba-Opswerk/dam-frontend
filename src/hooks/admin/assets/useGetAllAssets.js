@@ -6,6 +6,7 @@ export const useGetAllAssets = ({ page, category, status, search }) => {
     queryKey: ["adminEmployeeAssets", page, category, status, search],
     queryFn: () => getAssets({ page, category, status, search }),
     keepPreviousData: true,
+    staleTime: 2 * 60 * 1000,
     refetchOnMount: true,
     refetchOnWindowFocus: true,
   });
