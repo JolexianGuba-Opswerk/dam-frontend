@@ -10,6 +10,7 @@ import {
   FiSave,
   FiUnlock,
   FiLoader,
+  FiBox,
 } from "react-icons/fi";
 import { FaUserPlus } from "react-icons/fa";
 import { useDepartmentDrop } from "../../../../hooks/admin/employee/useDepartmentDrop";
@@ -21,9 +22,11 @@ import { useDeleteEmployee } from "../../../../hooks/admin/employee/useDeleteEmp
 import { DeleteConfirmationModal } from "../../../utils/DeleteConfirmationModal";
 import { useParams } from "react-router-dom";
 import QueryStatus from "../../../utils/QueryStatus";
+import EmployeeAssetsModal from "./EmployeeAssetsList";
 
 const EditEmployeeModal = ({ isOpen, onClose }) => {
   const { id: employeeId } = useParams();
+  const [openAssetsList, setOpenAssetsList] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     first_name: "",
@@ -49,7 +52,7 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const isVerifiedBoolean = formData.is_verified === "true";
-    console.log("Verification inpt", isVerifiedBoolean);
+
     mutation.mutate(
       {
         id: employeeId,
@@ -87,7 +90,11 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
     }
   }, [data, employeeId]);
 
-  const handleClose = () => {
+  const handleClose = (e) => {
+    if (deleteMutation.isPending || mutation.isPending) {
+      e.preventDefault();
+      return;
+    }
     mutation.reset();
     setFormData({
       username: "",
@@ -115,6 +122,7 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
       });
     }
   };
+  // Change password Section
 
   if (!isOpen) return null;
 
@@ -127,12 +135,21 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
             <FaUserPlus className="mr-2 text-blue-500" />
             Update Employee
           </h2>
-          <button
-            onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
-          >
-            <FiX size={24} />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setOpenAssetsList(true)}
+              className="text-gray-400 hover:text-gray-600 transition-colors p-2 rounded-full hover:bg-gray-100 flex items-center"
+            >
+              Assigned Assets
+              <FiBox className="ml-1" />
+            </button>
+            <button
+              onClick={handleClose}
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+            >
+              <FiX size={24} />
+            </button>
+          </div>
         </div>
 
         {/* Error Handler Section */}
@@ -329,6 +346,7 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
             <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
               <button
                 type="button"
+                disabled={mutation.isPending || deleteMutation.isPending}
                 onClick={() => {
                   toast.info("Password change feature will be available soon");
                 }}
@@ -339,6 +357,7 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
               </button>
               <button
                 type="button"
+                disabled={mutation.isPending || deleteMutation.isPending}
                 onClick={setOpenDeleteModal}
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center"
               >
@@ -360,7 +379,7 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
                   disabled={true}
                   className="px-5 py-2.5 bg-blue-500 text-white rounded-lg  flex items-center"
                 >
-                  <FiLoader className="mr-2" />
+                  <FiLoader className="mr-2 mx-auto animate-spin text-white-500" />
                   Loading
                 </button>
               )) || (
@@ -382,6 +401,11 @@ const EditEmployeeModal = ({ isOpen, onClose }) => {
         onClose={() => setOpenDeleteModal(false)}
         onConfirm={handleOnDelete}
         message={"Are you sure you want to delete this employee?"}
+      />
+      <EmployeeAssetsModal
+        isOpen={openAssetsList}
+        onClose={() => setOpenAssetsList(false)}
+        employee={employeeId}
       />
     </div>
   );

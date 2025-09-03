@@ -35,6 +35,7 @@ const CreateEmployeeModal = ({ isOpen, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const isVerifiedBoolean = formData.is_verified === "true";
     mutation.mutate(
       {
@@ -60,6 +61,9 @@ const CreateEmployeeModal = ({ isOpen, onClose }) => {
   };
 
   const handleClose = () => {
+    if (mutation.isPending) {
+      return;
+    }
     mutation.reset();
     setFormData({
       username: "",
